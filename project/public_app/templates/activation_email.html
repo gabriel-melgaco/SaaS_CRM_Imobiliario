@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        .container {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            padding: 20px;
+            text-align: center;
+        }
+        .card {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            display: inline-block;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        p {
+            color: #34495e;
+        }
+        .code {
+            font-size: 24px;
+            font-weight: bold;
+            color: #e74c3c;
+            margin: 10px 0;
+        }
+        .button {
+            display: inline-block;
+            background-color: #3498db;
+            color: #ffffff;
+            padding: 10px 20px;
+            text-decoration: none;
+            border-radius: 5px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        .code-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.2em;
+            color:#e74c3c;
+            margin-left: 70px;
+        }
+        #botaoCopiar {
+            font-size: 0.5em;  /* Reduz o tamanho do texto */
+            padding: 5px 10px; /* Diminui o espaçamento interno */
+            background-color: #e74c3c; /* Cor azul padrão */
+            color: white; /* Cor do texto */
+            border-radius: 5px; /* Cantos arredondados */
+            text-decoration: none; /* Remove o sublinhado do link */
+            display: inline-block; /* Mantém o botão no tamanho certo */
+        }
+
+        #botaoCopiar:hover {
+            background-color: #0056b3; /* Azul mais escuro no hover */
+}
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h1><i class="fa-brands fa-keycdn fa-2x"></i> Bem-vindo à IMOVASE!</h1>
+            <p>Obrigado por se cadastrar! Copie e cole o código abaixo para ativar sua conta:</p>
+            <div class="code-container">
+                <h5 class="code-container" id="textoParaCopiar"> {{ activation_code }} <a class="button" id="botaoCopiar">Copiar</a></h5>
+            </div>
+            <p>Clique no botão abaixo para inserir seu código e realizar seu login:</p>
+            <a class="button" href="http://{{ domain_name }}/activation/{{ user_id }}">Ativar Conta</a>
+        </div>
+    </div>
+
+    <script>
+        // Seleciona o botão e o texto
+        const botaoCopiar = document.getElementById('botaoCopiar');
+        const textoParaCopiar = document.getElementById('textoParaCopiar');
+
+        // Adiciona o evento de clique ao botão
+        botaoCopiar.addEventListener('click', () => {
+            // Cria uma área de texto temporária
+            const areaDeTexto = document.createElement('textarea');
+            areaDeTexto.value = textoParaCopiar.textContent;
+
+            // Adiciona o textarea ao documento
+            document.body.appendChild(areaDeTexto);
+
+            // Seleciona e copia o conteúdo
+            areaDeTexto.select();
+            document.execCommand('copy');
+
+            // Remove o textarea
+            document.body.removeChild(areaDeTexto);
+
+            // Feedback visual
+            alert('Texto copiado para a área de transferência!');
+        });
+
+      </script>
+
+    </div>
+    <!-- Font Awesome -->
+</html>
