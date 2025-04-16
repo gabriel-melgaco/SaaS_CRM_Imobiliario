@@ -82,6 +82,11 @@
                   <li class="nav-item d-flex align-items-center">
                     <a class="btn btn-outline-primary btn-sm mb-0 me-2">Bem vindo, {{ user.first_name }}</a>
                   </li>
+                  {% if client %}
+                  <li class="nav-item d-flex align-items-center">
+                    <a href="http://{{client.dns_name}}.{{DOMAIN_NAME}}" class="btn btn-outline-primary btn-sm mb-0 me-2"><strong>Acessar minha Página</strong></a>
+                  </li>
+                  {% endif %}
                   <li class="nav-item d-flex align-items-center">
                     <a href="{% url 'logout' %}" class="btn btn-sm mb-0 me-1 bg-gradient-dark">LOGOUT</a>
                   </li>
@@ -93,6 +98,8 @@
                     <a href="{% url 'login' %}" class="btn btn-sm mb-0 me-1 bg-gradient-dark">LOGIN</a>
                   </li>
                   {% endif %}
+
+                  
               </ul>
             </div>
           </div>

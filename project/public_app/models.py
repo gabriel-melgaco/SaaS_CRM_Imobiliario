@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 import random
 from django.utils.timezone import localtime
 from project.settings import DOMAIN_NAME
-from django.utils import timezone
 import pytz
 
 fuso_horario = pytz.timezone('America/Sao_Paulo')
@@ -34,7 +33,7 @@ class ActivationCode(models.Model):
 class ResetPassword(models.Model):
     user = models.ForeignKey(User, on_delete=models.PROTECT)
     token = models.CharField(max_length=255, unique=True)
-    created_at = models.DateTimeField(default=lambda: timezone.now().astimezone(fuso_horario))
+    created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
         return self.token

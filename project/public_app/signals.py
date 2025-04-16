@@ -44,6 +44,3 @@ def send_password_reset_email(sender, instance, created, **kwargs):
 def register_client_post_save(sender, instance, **kwargs):
     client_count = Client.objects.count()
     ClientInventory.objects.create(client_count=client_count)
-
-
-

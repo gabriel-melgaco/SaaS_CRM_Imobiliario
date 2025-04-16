@@ -11,12 +11,15 @@ from django.contrib import messages
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import timezone
 from project.settings import DOMAIN_NAME
-
+from django.db.models import Q #use for filtering the user by username OR email
 
 
 def index(request):
+    if not request.user.is_authenticated:
+        return render(request, 'landing_page.html')
+    client = Client.objects.filter(user=request.user).first()
 
-    return render(request, 'landing_page.html')
+    return render(request, 'landing_page.html', {'client': client, 'DOMAIN_NAME': DOMAIN_NAME,})
 
 
 class LoginView(View):
@@ -133,23 +136,7 @@ class PasswordResetConfirmView(View): #Open the reset password page with a token
 
     def get(self, request, token):
         reset_token = ResetPassword.objects.filter(token=token).first()
-    
-        if not reset_token:
-            return render(request, 'reset_password_confirm.html', {
-                'error': 'Link inválido ou expirado.'
-            })
-
-        password_reset_confirm_form = PasswordResetConfirmForm()
-        return render(request, 'reset_password_confirm.html', {
-            'password_reset_confirm_form': password_reset_confirm_form,
-            'token': token,
-        })
-    
-    def post(self, request, token):
-        password_reset_confirm_form = PasswordResetConfirmForm(data=request.POST)
-        reset_token = ResetPassword.objects.filter(token=token).first()
-
-        #check if the token still exists
+        
         if not reset_token:
             return render(request, 'reset_password_confirm.html', {
                 'error': 'Link inválido ou expirado.'
@@ -161,6 +148,16 @@ class PasswordResetConfirmView(View): #Open the reset password page with a token
             return render(request, 'reset_password_confirm.html', {
                 'error': 'Link expirado. Solicite um novo link de redefinição de senha.'
             })
+
+        password_reset_confirm_form = PasswordResetConfirmForm()
+        return render(request, 'reset_password_confirm.html', {
+            'password_reset_confirm_form': password_reset_confirm_form,
+            'token': token,
+        })
+    
+    def post(self, request, token):
+        password_reset_confirm_form = PasswordResetConfirmForm(data=request.POST)
+        reset_token = ResetPassword.objects.filter(token=token).first()
 
         if password_reset_confirm_form.is_valid():
             user = reset_token.user
