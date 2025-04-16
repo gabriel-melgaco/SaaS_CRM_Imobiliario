@@ -8,7 +8,6 @@ from django.contrib.auth.models import User
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Div, Submit, HTML
 import re
-from django.contrib.auth import authenticate
 from django_recaptcha.fields import ReCaptchaField
 from django.db.models import Q #use for filtering the user by username OR email 
 from django.shortcuts import redirect
@@ -114,18 +113,13 @@ class LoginForm(AuthenticationForm):
 
     def clean(self):
         username_or_email = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
 
         try:
             user = User.objects.get(Q(email=username_or_email) | Q(username=username_or_email))
-            self.user_cache = authenticate(self.request, username=user.username, password=password)
         except User.DoesNotExist:
-            raise forms.ValidationError('Email/Nome de Usuário ou senha inválidos.', code='invalid_login')
-        
-        if self.user_cache is None:
-            raise forms.ValidationError('Acesse seu e-mail para ativar sua conta.', code='invalid_login')
-        
-        self.confirm_login_allowed(self.user_cache)
+            raise forms.ValidationError('Este usuário/email não está cadastrado no nosso banco de dados. Registre-se no nosso site pelo botão acima.', code='invalid_login')
+
+        self.cleaned_data['username'] = user
 
         return self.cleaned_data
 

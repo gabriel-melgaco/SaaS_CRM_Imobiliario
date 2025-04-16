@@ -12,6 +12,7 @@ from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import timezone
 from project.settings import DOMAIN_NAME
 from django.db.models import Q #use for filtering the user by username OR email
+from django.contrib.auth import authenticate
 
 
 def index(request):
@@ -30,22 +31,29 @@ class LoginView(View):
 
     def post(self, request):
         login_form = LoginForm(data=request.POST)
+        password = request.POST.get('password')
 
-        try:
-            user = User.objects.get(username=request.POST['username'])
+        if login_form.is_valid():
+            user = User.objects.filter(username=login_form.cleaned_data['username']).first()
+            
+            if user is None:
+                login_form.add_error(None, 'Usuário não encontrado.')
+                return render(request, 'login.html', {'login_form': login_form})
+
+            if not user.check_password(password):
+                login_form.add_error(None, 'Senha inválida. Por favor, tente novamente.')
+                return render(request, 'login.html', {'login_form': login_form})
+
             if not user.is_active:
                 return redirect('activation', user_id=user.id)
-        
-        except User.DoesNotExist:
-            pass
 
-        
-        if login_form.is_valid():
-            user = login_form.get_user()
-            login(request, user)
-            return redirect('home')
+            user_auth = authenticate(request, username=user.username, password=password)
+            if user_auth is not None:
+                login(request, user)
+                return redirect('home')
 
         return render(request, 'login.html', {'login_form': login_form})
+
 
 
 class ActivationView(View):

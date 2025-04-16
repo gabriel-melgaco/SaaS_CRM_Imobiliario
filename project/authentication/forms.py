@@ -1,8 +1,9 @@
 from django.contrib.auth.forms import AuthenticationForm
 from crispy_forms.helper import FormHelper
 from crispy_forms.layout import Layout, Field, Div, Submit, HTML
-from django.contrib.auth import authenticate
 from django.contrib.auth.models import User
+from public_app.models import Client
+from .models import TenantUser
 from authentication.models import TenantUser
 from django import forms
 from django.db.models import Q
@@ -39,21 +40,13 @@ class LoginForm(AuthenticationForm):
 
     def clean(self):
         username_or_email = self.cleaned_data.get('username')
-        password = self.cleaned_data.get('password')
 
         try:
             user = User.objects.get(Q(email=username_or_email) | Q(username=username_or_email))
-            self.user_cache = authenticate(self.request, username=user.username, password=password)
         except User.DoesNotExist:
-            raise forms.ValidationError(
-            'Email/Nome de Usuário ou senha inválidos. Lembre-se de diferenciar letras maiúsculas de minúsculas.',
-            code='invalid_login'
-            )
-
-        if self.user_cache is None:
-            raise forms.ValidationError('Sua conta está inativa. Acesse seu e-mail para ativa-la.', code='invalid_login')
-
-        self.confirm_login_allowed(self.user_cache)
+            raise forms.ValidationError('Este usuário/email não está cadastrado no nosso banco de dados. Solicite ao administrador do seu sistema.', code='invalid_login')
+        
+        self.cleaned_data['username'] = user
 
         current_schema = connection.schema_name
         tenant_user = TenantUser.objects.filter(user=user).first()
@@ -152,3 +145,9 @@ class SignUpTenantUser(UserCreationForm):
         if User.objects.filter(email=email).exists():
             self.add_error('email', 'E-mail já cadastrado')
         return email
+    
+    def clean_cpf(self):
+        cpf = self.cleaned_data['cpf']
+        if Client.objects.filter(cpf=cpf).exists() or TenantUser.objects.filter(cpf=cpf).exists():
+            self.add_error('cpf', 'CPF já cadastrado')
+        return cpf
