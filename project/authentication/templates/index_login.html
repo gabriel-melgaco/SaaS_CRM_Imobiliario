@@ -71,7 +71,14 @@
                 <form method="POST" role="form" class="text-start">
                   {% csrf_token %}
                     {% crispy login_form %}
-      
+                    {% if messages %}
+                              {% for message in messages %}
+                              <div class="alert alert-success alert-dismissible fade show d-flex justify-content-center align-items-center text-center" role="alert">
+                                <i class="fa-solid fa-check"></i><strong class="flex-grow-1">{{ message }}</strong>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                              </div>
+                              {% endfor %}
+                    {% endif %}
                   <p class="mt-4 text-sm text-center">
                     Esqueceu sua senha?
                     <a href="../pages/sign-up.html" class="text-primary text-gradient font-weight-bold">Clique aqui</a>

@@ -7,8 +7,6 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from authentication.models import TenantUser
 from django.contrib.auth import authenticate
-from django import forms
-
 
 
 
@@ -47,7 +45,6 @@ class LoginIndexView(View):
     
 class SignUpTenantUserView(View):
     def get(self, request, *args, **kwargs):
-        print('template está sendo renderizado')
         signup_form = SignUpTenantUser()
         return render(request, 'signup_worker.html', {'signup_form': signup_form})
 
