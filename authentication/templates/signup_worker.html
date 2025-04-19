@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+{% load static %}
+{% load crispy_forms_tags %}
+
+<div class="container-fluid py-2">
+  <div class="row">
+    <div class="col-12">
+      <div class="card my-4">
+        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+          <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
+            <h6 class="text-white text-capitalize ps-3">Cadastro de Colaboradores</h6>
+          </div>
+        </div>
+        <div class="card-body px-4 pb-4">
+          {% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show d-flex justify-content-center align-items-center text-center" role="alert">
+            <i class="fa-solid fa-check"></i><strong class="flex-grow-1">{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+          {% endif %}
+          <form method="POST">
+            {% csrf_token %}
+            {% crispy signup_form %}
+          </form>
+          <!-- Fim do formulário -->
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

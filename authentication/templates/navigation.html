@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid py-2">
+  <div class="row">
+    <div class="col-12">
+      <div class="card my-4">
+        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+          <div class="bg-gradient-dark shadow-dark border-radius-lg pt-4 pb-3">
+            <h6 class="text-white text-capitalize ps-3">Olá,</h6>
+          </div>
+          <div class="d-flex flex-column justify-content-center">
+            <p class="card-body px-0 pb-2text-xs text-secondary mb-0">Acesse os menus laterais para navegar na administração da {{request.tenant.company_name }}.</p>
+            <p class="card-body px-0 pb-2text-xs text-secondary mb-0">Caso tenha alguma dúvida, entre em contato com o nosso suporte.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
