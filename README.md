@@ -81,4 +81,27 @@ A multi-tenant system built with Django for managing clients, properties, and us
    ```
 
 7. **Django Tenant Complements Configs:**
+   - access the django shell
+   ```bash
+   python manage.py shell
+   ```
+   - import the tenant complement:
+   ```bash
+   from public_app.models import Client, Domain  # Ajuste o nome do app conforme sua estrutura
+
+    # Create a tenant associated with the hostname "localhost"
+    tenant = Client(schema_name='public', 
+                    company_name='Admin Global', 
+                    paid_until='2026-01-01', 
+                    on_trial=False, 
+                    dns_name='localhost', 
+                    telephone='123456789', 
+                    activation=True)
+    tenant.save()
+    ```
+
+8. **Run the development server:**
+   ```bash
+   python manage.py runserver
+   ```
 
