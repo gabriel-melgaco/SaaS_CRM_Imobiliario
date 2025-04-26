@@ -6,13 +6,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from .models import Client, ActivationCode, ResetPassword
 from datetime import datetime, timedelta
 from django.views import View
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from django.contrib import messages
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
 from django.utils import timezone
 from project.settings import DOMAIN_NAME
 from django.db.models import Q #use for filtering the user by username OR email
 from django.contrib.auth import authenticate
+
 
 
 def index(request):
@@ -204,6 +205,10 @@ class RegisterClientView(LoginRequiredMixin, View):
             client.schema_name = client.dns_name
             client.user = user
             client.save()
+
+            admin_group, _ = Group.objects.get_or_create(name='admin')
+            user.groups.add(admin_group)
+
             
             print(f"Novo client criado: {client.company_name} para {client.user.username}")
 

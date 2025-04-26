@@ -1,0 +1,13 @@
+<!-- templates/confirm_delete.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h3>Altere a função do seu colaborador: {{ object.user.first_name }} {{ object.user.last_name }}</h3>
+    <form method="post">{% csrf_token %}
+      {{ form.as_p }}
+      <button type="submit" class="btn btn-danger">Atualizar</button>
+      <a href="{% url 'show_tenant_users' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+  </div>
+{% endblock %}

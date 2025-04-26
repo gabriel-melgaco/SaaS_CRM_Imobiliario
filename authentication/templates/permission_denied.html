@@ -1,0 +1,18 @@
+<!-- templates/confirm_delete.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+{% if messages %}
+          {% for message in messages %}
+          <div class="alert alert-success alert-dismissible fade show d-flex justify-content-center align-items-center text-center" role="alert">
+            <i class="fa-solid fa-check"></i><strong class="flex-grow-1">{{ message }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+          {% endif %}
+<div class="alert alert-danger mt-4">
+  <h3>Acesso negado</h3>
+  <p>Você não tem permissão para acessar esta funcionalidade.</p>
+  <p>Fale com seu administrador.</p>
+</div>
+{% endblock %}

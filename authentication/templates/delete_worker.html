@@ -1,0 +1,13 @@
+<!-- templates/confirm_delete.html -->
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-5">
+    <h3>Tem certeza que deseja deletar o colaborador: {{ object.user.first_name }} {{ object.user.last_name }}?</h3>
+    <form method="post">
+      {% csrf_token %}
+      <button type="submit" class="btn btn-danger">Sim, deletar</button>
+      <a href="{% url 'show_tenant_users' %}" class="btn btn-secondary">Cancelar</a>
+    </form>
+  </div>
+{% endblock %}

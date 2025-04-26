@@ -2,19 +2,30 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import login, logout
 from authentication.forms import LoginForm, SignUpTenantUser
 from django.views import View
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib import messages
 from django.contrib.auth.models import User
 from authentication.models import TenantUser
 from django.contrib.auth import authenticate
+from django.views.generic.list import ListView
+from django.views.generic.edit import DeleteView, UpdateView
+from django.urls import reverse_lazy
+from project.settings import DOMAIN_NAME 
 
+
+class AdminGroupRequiredMixin(UserPassesTestMixin):
+    def test_func(self):
+        return self.request.user.groups.filter(name='admin').exists()
+
+    def handle_no_permission(self):
+        return redirect('permission_denied')
 
 
 class LoginIndexView(View):
 
     def get(self, request):
         login_form = LoginForm()
-        return render(request, 'index_login.html', {'login_form': login_form})
+        return render(request, 'index_login.html', {'login_form': login_form , 'DOMAIN_NAME': DOMAIN_NAME})
 
     def post(self, request):
         login_form = LoginForm(data=request.POST)
@@ -43,7 +54,9 @@ class LoginIndexView(View):
         return render(request, 'index_login.html', {'login_form': login_form})
 
     
-class SignUpTenantUserView(View):
+class SignUpTenantUserView(AdminGroupRequiredMixin, LoginRequiredMixin, View):
+    permission_required = 'admin'
+
     def get(self, request, *args, **kwargs):
         signup_form = SignUpTenantUser()
         return render(request, 'signup_worker.html', {'signup_form': signup_form})
@@ -63,6 +76,41 @@ class SignUpTenantUserView(View):
             messages.success(request, 'Usuário criado com sucesso! Entre no e-mail para ativar sua conta.')
             return redirect('signup_tenant_user')
         return render(request, 'signup_worker.html', {'signup_form': signup_form})
+    
+    
+class ShowTenantUserView(AdminGroupRequiredMixin, LoginRequiredMixin, ListView):
+    model = TenantUser
+    template_name = 'show_worker.html'
+    context_object_name = 'users'
+    paginate_by = 10
+    ordering = ['id']
+
+
+class DeleteTenantUserView(AdminGroupRequiredMixin, DeleteView):
+    model = TenantUser
+    template_name = 'delete_worker.html'
+    success_url = reverse_lazy("show_tenant_users")
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(request, "Usuário excluído com sucesso!")
+        return super().delete(request, *args, **kwargs)
+
+
+class UpdateTenantUserView(AdminGroupRequiredMixin, UpdateView):
+    model = TenantUser
+    fields = ["function"]
+    template_name = "update_worker.html"
+    success_url = reverse_lazy("show_tenant_users")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Função atualizada com sucesso!")
+        return super().form_valid(form)
+
+
+class ShowUserProfileView(LoginRequiredMixin, View):
+    def get(self, request, *args, **kwargs):
+        tenant_user = TenantUser.objects.filter(tenant=request.tenant, user=request.user).first()
+        return render(request, 'show_profile.html', {'DOMAIN_NAME': DOMAIN_NAME, 'tenant_user': tenant_user})
 
 
 class NavigationView(LoginRequiredMixin, View):

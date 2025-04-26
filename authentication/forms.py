@@ -69,11 +69,12 @@ class SignUpTenantUser(UserCreationForm):
     last_name = forms.CharField(required=True, max_length=30)
     email = forms.EmailField(required=True)
     cpf = forms.CharField(required=True, max_length=11, min_length=11, label='CPF', widget=forms.TextInput(attrs={'placeholder': 'Digite seu CPF'}))
+    telephone = forms.CharField(required=True, max_length=20, min_length=11, label='Telefone', widget=forms.TextInput(attrs={'placeholder': 'Digite seu Telefone'}))
     function = forms.ChoiceField(choices=[('admin', 'Administrador'), ('recursos_humanos', 'Recursos Humanos'), ('corretor', 'Corretor de Imóveis')], label='Função')
     
     class Meta:
         model = User
-        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'cpf', 'function',]
+        fields = ['username', 'first_name', 'last_name', 'email', 'password1', 'password2', 'cpf', 'telephone', 'function',]
 
     def __init__(self, *args, **kwargs):
         super(SignUpTenantUser, self).__init__(*args, **kwargs)
@@ -124,7 +125,12 @@ class SignUpTenantUser(UserCreationForm):
                       css_class='form-control rounded-pill py-2 px-3 mb-3 shadow-sm border border-secondary'
                 ),
             ),
-
+            Div(
+                Field('telephone',
+                      placeholder='Digite seu Telefone',
+                      css_class='form-control rounded-pill py-2 px-3 mb-3 shadow-sm border border-secondary'
+                ),
+            ),
             Div(
                 HTML('<small class"form-text text-muted"> Escolha um função que seu colaborador irá desempenhar: </small>'),
                 Field('function',
@@ -151,3 +157,9 @@ class SignUpTenantUser(UserCreationForm):
         if Client.objects.filter(cpf=cpf).exists() or TenantUser.objects.filter(cpf=cpf).exists():
             self.add_error('cpf', 'CPF já cadastrado')
         return cpf
+    
+    def clean_telephone(self):
+        telephone = self.cleaned_data['telephone']
+        if not telephone.isdigit() or len(telephone) != 11:
+            self.add_error('telephone', 'O telefone deve conter apenas números e 11 dígitos com DDD')
+        return telephone
