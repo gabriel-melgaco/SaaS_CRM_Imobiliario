@@ -10,15 +10,8 @@ from django.contrib.auth import authenticate
 from django.views.generic.list import ListView
 from django.views.generic.edit import DeleteView, UpdateView
 from django.urls import reverse_lazy
-from project.settings import DOMAIN_NAME 
+from project.settings import DOMAIN_NAME
 
-
-class AdminGroupRequiredMixin(UserPassesTestMixin):
-    def test_func(self):
-        return self.request.user.groups.filter(name='admin').exists()
-
-    def handle_no_permission(self):
-        return redirect('permission_denied')
 
 
 class LoginIndexView(View):
@@ -54,7 +47,7 @@ class LoginIndexView(View):
         return render(request, 'index_login.html', {'login_form': login_form})
 
     
-class SignUpTenantUserView(AdminGroupRequiredMixin, LoginRequiredMixin, View):
+class SignUpTenantUserView(LoginRequiredMixin, View):
     permission_required = 'admin'
 
     def get(self, request, *args, **kwargs):
@@ -78,7 +71,7 @@ class SignUpTenantUserView(AdminGroupRequiredMixin, LoginRequiredMixin, View):
         return render(request, 'signup_worker.html', {'signup_form': signup_form})
     
     
-class ShowTenantUserView(AdminGroupRequiredMixin, LoginRequiredMixin, ListView):
+class ShowTenantUserView(LoginRequiredMixin, ListView):
     model = TenantUser
     template_name = 'show_worker.html'
     context_object_name = 'users'
@@ -86,7 +79,7 @@ class ShowTenantUserView(AdminGroupRequiredMixin, LoginRequiredMixin, ListView):
     ordering = ['id']
 
 
-class DeleteTenantUserView(AdminGroupRequiredMixin, DeleteView):
+class DeleteTenantUserView(LoginRequiredMixin, DeleteView):
     model = TenantUser
     template_name = 'delete_worker.html'
     success_url = reverse_lazy("show_tenant_users")
@@ -96,7 +89,7 @@ class DeleteTenantUserView(AdminGroupRequiredMixin, DeleteView):
         return super().delete(request, *args, **kwargs)
 
 
-class UpdateTenantUserView(AdminGroupRequiredMixin, UpdateView):
+class UpdateTenantUserView(LoginRequiredMixin, UpdateView):
     model = TenantUser
     fields = ["function"]
     template_name = "update_worker.html"
